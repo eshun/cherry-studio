@@ -378,7 +378,7 @@ const TranslatePage: FC = () => {
           </OperationBar>
 
           <OutputText ref={outputTextRef} onScroll={handleOutputScroll} className="selectable">
-            {result || t('translate.output.placeholder')}
+            {result}
           </OutputText>
         </OutputContainer>
       </ContentContainer>

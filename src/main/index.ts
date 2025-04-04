@@ -1,9 +1,10 @@
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { replaceDevtoolsFont } from '@main/utils/windowUtil'
 import { app, ipcMain } from 'electron'
-import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 
 import { registerIpc } from './ipc'
+import { defaultLogger } from './logger'
 import { configManager } from './services/ConfigManager'
 import { CHERRY_STUDIO_PROTOCOL, handleProtocolUrl, registerProtocolClient } from './services/ProtocolClient'
 import { registerShortcuts } from './services/ShortcutService'
@@ -18,6 +19,8 @@ if (!app.requestSingleInstanceLock()) {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
+
+  defaultLogger.info('App is ready')
 
   app.whenReady().then(async () => {
     // Set app user model id for windows
@@ -48,7 +51,7 @@ if (!app.requestSingleInstanceLock()) {
     replaceDevtoolsFont(mainWindow)
 
     if (process.env.NODE_ENV === 'development') {
-      installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS])
+      installExtension(REDUX_DEVTOOLS)
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log('An error occurred: ', err))
     }

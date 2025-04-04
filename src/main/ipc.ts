@@ -4,9 +4,10 @@ import { isMac, isWin } from '@main/constant'
 import { getBinaryPath, isBinaryExists, runInstallScript } from '@main/utils/process'
 import { Shortcut, ThemeMode } from '@types'
 import { BrowserWindow, ipcMain, session, shell } from 'electron'
-import log from 'electron-log'
+import logger from 'electron-log'
 
 import { titleBarOverlayDark, titleBarOverlayLight } from './config'
+import { rendererLogger } from './logger'
 import AppUpdater from './services/AppUpdater'
 import BackupManager from './services/BackupManager'
 import { configManager } from './services/ConfigManager'
@@ -36,6 +37,23 @@ const obsidianVaultService = new ObsidianVaultService()
 export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   const appUpdater = new AppUpdater(mainWindow)
 
+  // log
+  ipcMain.handle('log:log', (_, ...params) => {
+    rendererLogger.log(params)
+  })
+  ipcMain.handle('log:debug', (_, ...params) => {
+    rendererLogger.debug(params)
+  })
+  ipcMain.handle('log:info', (_, ...params) => {
+    rendererLogger.info(params)
+  })
+  ipcMain.handle('log:warn', (_, ...params) => {
+    rendererLogger.warn(params)
+  })
+  ipcMain.handle('log:error', (_, ...params) => {
+    rendererLogger.error(params)
+  })
+
   ipcMain.handle('app:info', () => ({
     version: app.getVersion(),
     isPackaged: app.isPackaged,
@@ -43,7 +61,7 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
     filesPath: getFilesDir(),
     appDataPath: app.getPath('userData'),
     resourcesPath: getResourcePath(),
-    logsPath: log.transports.file.getFile().path
+    logsPath: logger.transports.file.getFile().path
   }))
 
   ipcMain.handle('app:proxy', async (_, proxy: string) => {
@@ -139,10 +157,10 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
         })
       )
       await fileManager.clearTemp()
-      await fs.writeFileSync(log.transports.file.getFile().path, '')
+      await fs.writeFileSync(logger.transports.file.getFile().path, '')
       return { success: true }
     } catch (error: any) {
-      log.error('Failed to clear cache:', error)
+      logger.error('Failed to clear cache:', error)
       return { success: false, error: error.message }
     }
   })
@@ -255,7 +273,6 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   ipcMain.handle('miniwindow:hide', () => windowService.hideMiniWindow())
   ipcMain.handle('miniwindow:close', () => windowService.closeMiniWindow())
   ipcMain.handle('miniwindow:toggle', () => windowService.toggleMiniWindow())
-  ipcMain.handle('miniwindow:set-pin', (_, isPinned) => windowService.setPinMiniWindow(isPinned))
 
   // aes
   ipcMain.handle('aes:encrypt', (_, text: string, secretKey: string, iv: string) => encrypt(text, secretKey, iv))

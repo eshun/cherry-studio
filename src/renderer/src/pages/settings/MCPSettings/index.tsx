@@ -89,14 +89,6 @@ const MCPSettings: FC = () => {
   }, [mcpServers, route, selectedMcpServer])
 
   const MainContent = useCallback(() => {
-    if (route === 'npx-search' || isEmpty(mcpServers)) {
-      return (
-        <SettingContainer theme={theme}>
-          <NpxSearch />
-        </SettingContainer>
-      )
-    }
-
     if (route === 'mcp-install') {
       return (
         <SettingContainer theme={theme}>
@@ -107,6 +99,14 @@ const MCPSettings: FC = () => {
 
     if (selectedMcpServer) {
       return <McpSettings server={selectedMcpServer} />
+    }
+
+    if (route === 'npx-search' || isEmpty(mcpServers)) {
+      return (
+        <SettingContainer theme={theme}>
+          <NpxSearch />
+        </SettingContainer>
+      )
     }
 
     return <NpxSearch />

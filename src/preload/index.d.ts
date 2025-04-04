@@ -137,7 +137,6 @@ declare global {
         hide: () => Promise<void>
         close: () => Promise<void>
         toggle: () => Promise<void>
-        setPin: (isPinned: boolean) => Promise<void>
       }
       aes: {
         encrypt: (text: string, secretKey: string, iv: string) => Promise<{ iv: string; encryptedData: string }>
@@ -176,6 +175,13 @@ declare global {
         decryptToken: (token: string) => Promise<{ username: string; access_token: string }>
         getDirectoryContents: (token: string, path: string) => Promise<any>
       }
+    }
+    electronLog: {
+      log: (...params: any[]) => void
+      debug: (...params: any[]) => void
+      info: (...params: any[]) => void
+      warn: (...params: any[]) => void
+      error: (...params: any[]) => void
     }
   }
 }

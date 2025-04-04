@@ -112,8 +112,7 @@ const api = {
     show: () => ipcRenderer.invoke('miniwindow:show'),
     hide: () => ipcRenderer.invoke('miniwindow:hide'),
     close: () => ipcRenderer.invoke('miniwindow:close'),
-    toggle: () => ipcRenderer.invoke('miniwindow:toggle'),
-    setPin: (isPinned: boolean) => ipcRenderer.invoke('miniwindow:set-pin', isPinned)
+    toggle: () => ipcRenderer.invoke('miniwindow:toggle')
   },
   aes: {
     encrypt: (text: string, secretKey: string, iv: string) => ipcRenderer.invoke('aes:encrypt', text, secretKey, iv),
@@ -140,6 +139,13 @@ const api = {
     getToken: (headers?: Record<string, string>) => ipcRenderer.invoke('copilot:get-token', headers),
     logout: () => ipcRenderer.invoke('copilot:logout'),
     getUser: (token: string) => ipcRenderer.invoke('copilot:get-user', token)
+  },
+  log: {
+    log: (...params: any[]) => ipcRenderer.invoke('log:log', params),
+    debug: (...params: any[]) => ipcRenderer.invoke('log:debug', params),
+    info: (...params: any[]) => ipcRenderer.invoke('log:info', params),
+    warn: (...params: any[]) => ipcRenderer.invoke('log:warn', params),
+    error: (...params: any[]) => ipcRenderer.invoke('log:error', params)
   },
 
   // Binary related APIs
@@ -178,6 +184,7 @@ if (process.contextIsolated) {
       getFolders: (vaultName: string) => ipcRenderer.invoke('obsidian:get-files', vaultName),
       getFiles: (vaultName: string) => ipcRenderer.invoke('obsidian:get-files', vaultName)
     })
+    contextBridge.exposeInMainWorld('electronLog', api.log)
   } catch (error) {
     console.error(error)
   }
@@ -186,4 +193,6 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
+  // @ts-ignore (define in dts)
+  window.electronLog = api.log
 }

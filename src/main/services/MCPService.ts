@@ -91,7 +91,7 @@ class McpService {
 
             // if the server name is mcp-auto-install, use the mcp-registry.json file in the bin directory
             if (server.name === 'mcp-auto-install') {
-              const binPath = await getBinaryPath()
+              const binPath = await getBinaryPath(server.command)
               makeSureDirExists(binPath)
               server.env.MCP_REGISTRY_PATH = path.join(binPath, 'mcp-registry.json')
             }

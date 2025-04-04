@@ -1,17 +1,15 @@
 import { UpdateInfo } from 'builder-util-runtime'
 import { app, BrowserWindow, dialog } from 'electron'
-import logger from 'electron-log'
 import { AppUpdater as _AppUpdater, autoUpdater } from 'electron-updater'
 
 import icon from '../../../build/icon.png?asset'
+import { defaultLogger as logger } from '../logger'
 
 export default class AppUpdater {
   autoUpdater: _AppUpdater = autoUpdater
   private releaseInfo: UpdateInfo | undefined
 
   constructor(mainWindow: BrowserWindow) {
-    logger.transports.file.level = 'info'
-
     autoUpdater.logger = logger
     autoUpdater.forceDevUpdateConfig = !app.isPackaged
     autoUpdater.autoDownload = true
